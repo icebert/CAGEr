@@ -118,7 +118,7 @@ setMethod( "quantilePositions", "CAGEexp"
     cum.sum <- decode(cum.sum) # A microbenchmark showed it it 3 times faster when applying decode() now
     c.max <- tail(cum.sum,1) # Max is last element since x is a cumulative sums.
     treshold <- c.max * q
-    which.max(cum.sum >= treshold)
+	if (any(as.logical(cum.sum))) which.max(cum.sum >= treshold) else NA
   })
   # Calculate quantile positions for each quantile.
   cluster.q <- lapply(q, getQuantilepos, cum.sums)
