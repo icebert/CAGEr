@@ -315,11 +315,12 @@ setMethod( "plotExpressionProfiles", "CAGEexp"
   DF <- DF[!is.na(cl),]
   df <- reshape2::melt(as.data.frame(DF), id="exprClass")
 
-  ggplot2::ggplot(df) +
-    ggplot2::aes_string(x = "value", y = "variable") +
-    ggplot2::geom_violin() +
-    ggplot2::facet_wrap(~exprClass) +
-    ggplot2::scale_x_log10()
+  ggplot2::ggplot(df, aes(x = variable, y = value)) +
+    ggplot2::geom_violin(aes(fill = exprClass, color = exprClass)) +
+    ggplot2::facet_wrap(~exprClass, labeller = labeller(exprClass = function(string ){
+    	table(DF$exprClass)
+	})) +
+    ggplot2::scale_y_log10() + xlab('') + ylab('TPM')
 })
 
 
