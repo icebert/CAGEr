@@ -318,9 +318,11 @@ setMethod( "plotExpressionProfiles", "CAGEexp"
   ggplot2::ggplot(df, aes(x = variable, y = value)) +
     ggplot2::geom_violin(aes(fill = exprClass, color = exprClass)) +
     ggplot2::facet_wrap(~exprClass, labeller = labeller(exprClass = function(string ){
-    	table(DF$exprClass)
-	})) +
-    ggplot2::scale_y_log10() + xlab('') + ylab('TPM')
+        table(DF$exprClass)
+    })) +
+    ggplot2::scale_y_log10() +
+	ggplot2::guides(fill='none', color='none') +
+	ggplot2::xlab('') + ggplot2::ylab('TPM')
 })
 
 
