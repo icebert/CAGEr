@@ -207,7 +207,7 @@ setMethod(".summarize.clusters", "data.table", function(ctss.clustered, removeSi
 	if(removeSingletons)
 		clusters <- subset(clusters, clusters$nr_ctss > 1 | clusters$tpm >= keepSingletonsAbove)
   
-  gr <- GRanges( seqnames = Rle(factor(clusters$chr))
+  gr <- GRanges( seqnames = Rle(factor(clusters$chr, levels = unique(clusters$chr)))
                , ranges   = IRanges(clusters$start, clusters$end)
                , strand   = clusters$strand
                , score    = Rle(clusters$tpm)
