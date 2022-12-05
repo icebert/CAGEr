@@ -117,7 +117,7 @@ setMethod( "scoreShift", "CAGEexp"
 	}
 	
 	message("\nCalculating shifting score...")
-	a <- object@CTSScumulativesConsensusClusters
+	a <- CTSScumulativesCC(object)
 	
 	# Problem: originally, CTSScumulativesConsensusClusters were in 0-based
 	# coordinates, meaning that the first Rle value was always 0.
@@ -147,17 +147,17 @@ setMethod( "scoreShift", "CAGEexp"
 	# -- end of ugly hack ---
 	
 	a <- a[names(a) %in% c(groupX, groupY)]
-	b <- object@consensusClusters
+	b <- consensusClustersGR(object)
 	cumsum.list <- bplapply(a, function(x) {
 	  n <- names(x)
-	  y <- subset(b, !(b$consensus.cluster %in% as.integer(names(x))))
-	  if (nrow(y)>0) {
-	    nulls <- lapply(as.list(c(1:nrow(y))), function(t) {
+	  y <- subset(b, !(names(b) %in% names(x)))
+	  if (length(y)>0) {
+	    nulls <- lapply(as.list(c(1:length(y))), function(t) {
 	      Rle(rep(0, y[t, "end"] - y[t, "start"] + 1))
 	    })
 	    x <- append(x, nulls)
 	  }
-	  names(x) <- c(n, as.character(y$consensus.cluster))
+	  names(x) <- c(n, names(y))
 	  return(x)
 	}, BPPARAM = CAGEr_Multicore(useMulticore, nrCores))
 	
@@ -262,9 +262,9 @@ setMethod( "scoreShift", "CAGEexp"
 	}
 	
 	
-	object@consensusClustersShiftingScores <- clusters.info
-	object@shiftingGroupX <- groupX
-	object@shiftingGroupY <- groupY
+	metadata(object)$consensusClustersShiftingScores <- clusters.info
+	metadata(object)$shiftingGroupX <- groupX
+	metadata(object)$shiftingGroupY <- groupY
 	object
 })
 
@@ -315,8 +315,8 @@ setGeneric( "getShiftingPromoters"
 setMethod( "getShiftingPromoters", "CAGEexp"
          , function (object, tpmThreshold, scoreThreshold, fdrThreshold) {
 
-	shifting.scores <- object@consensusClustersShiftingScores
-	clusters <- object@consensusClusters
+	shifting.scores <- metadata(object)$consensusClustersShiftingScores
+	clusters <- consensusClustersGR(object)
 	
 	sig.shifting <- shifting.scores[ ( shifting.scores$groupX.tpm >= tpmThreshold &
 	                                   shifting.scores$groupY.tpm >= tpmThreshold   ) &
